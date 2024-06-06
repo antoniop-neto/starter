@@ -16,6 +16,9 @@ const controlRecipes = async function () {
     const id = window.location.hash.slice(1); // taking the id from URL
     if (!id) return;
     recipeView.renderSpinner();
+
+    // Update results view to mark selected search result
+    resultsView.update(model.getSearchResultsPage());
     // Loading Recipe
     await model.loadRecipe(id);
     // Rendering Recipe
@@ -54,8 +57,20 @@ const controlPagination = function (goToPage) {
   paginationView.render(model.state.search);
 };
 
+const controlServings = function (newServings) {
+  // to test this function, it is not gonna work if placed in the end of the 'init' function because 'controlRecipes' is an async function and it is not happened yet, so we have to place this in the end of the 'controlRecipes'
+
+  // Update the recipe servings in state
+  model.updateServings(newServings); // the data needs to come from model
+
+  // Update the recipe view (Rendering Recipe again)
+  // recipeView.render(model.state.recipe);
+  recipeView.update(model.state.recipe);
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerUpdateServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView._addHandlerClick(controlPagination);
 };
